@@ -12,6 +12,30 @@
   var page = document.documentElement.getAttribute('data-page') || '';
   var KL = window.KL || {};
 
+  /* ======================= GOOGLE TAG MANAGER (edit here, applies to every page) =======================
+   * This file loads in <head> on every page, so the GTM head snippet below runs there.
+   * The container ID is window.KL_GTM_ID (set by boot.js from ?gtm=, then localStorage, then config.js).
+   * No ID set = nothing is loaded. To add another tag to the <head> of every page (a pixel, for example),
+   * put it right below the snippet.
+   */
+  if (window.KL_GTM_ID) {
+    // ---- GTM head snippet (standard Google code, ID swapped for window.KL_GTM_ID) ----
+    (function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+      var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+      j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl + (window.KL_GTM_ENV || '');
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', window.KL_GTM_ID);
+  }
+  // ---- GTM body snippet (the <noscript> iframe). Inserted as the first thing inside <body>, by the header below. ----
+  function gtmNoscript() {
+    return window.KL_GTM_ID
+      ? '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=' + window.KL_GTM_ID +
+        '" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>'
+      : '';
+  }
+  /* ============================================================================================ */
+
   // Which nav link is "current" for each page
   var NAV_FOR = { shop: 'shop', product: 'shop', guide: 'guide', tasting: 'tasting', gifting: 'gifting', 'track-order': 'track-order' };
   var activeNav = NAV_FOR[page] || '';
@@ -36,6 +60,10 @@
       var accountLabel = user.loggedIn ? first : 'Log in';
       var accountHref = user.loggedIn ? 'account.html' : 'login.html';
       var count = cartCount();
+      // GTM <noscript> goes at the very top of <body> (see the GTM block at the top of this file)
+      if (!document.getElementById('gtm-noscript-holder')) {
+        document.body.insertAdjacentHTML('afterbegin', '<div id="gtm-noscript-holder" hidden>' + gtmNoscript() + '</div>');
+      }
       this.innerHTML = `
 <header class="site-header" id="site-header">
   <div class="container site-header__inner">

@@ -22,7 +22,7 @@ Four rules shape every decision:
   - **Live data** is copied into `localStorage` on first visit and all changes (signups, orders, refunds, reviews, admin status changes) are saved there.
   - "Reset demo data" in the demo panel wipes `localStorage` and re-seeds.
 - **Cross-tab sync:** pages listen for the `storage` event, so an admin tab advancing an order updates an open order-tracking tab live.
-- **Separate files:** HTML, CSS and JS are separate. No inline `<style>`, no inline event handlers. The only inline script allowed is the standard GTM snippet.
+- **Separate files:** HTML, CSS and JS are separate. No inline `<style>`, no inline event handlers. No inline scripts at all: the GTM snippet also lives in `js/partials.js` (section 14).
 - Responsive down to 360px. Semantic HTML, visible focus states, alt text on all images.
 - `<meta name="robots" content="noindex, nofollow">` on every page.
 
@@ -84,11 +84,10 @@ The header, footer and cart drawer are written once and injected by JavaScript i
   <link rel="stylesheet" href="css/pages/shop.css">
   <script src="js/config.js"></script>
   <script src="js/boot.js"></script>
-  <script><!-- standard GTM snippet, container ID = window.KL_GTM_ID --></script>
   <script src="js/partials.js"></script>
 </head>
 <body>
-  <noscript><!-- GTM noscript iframe, placeholder ID --></noscript>
+  <!-- GTM body snippet (noscript iframe): inserted here by js/partials.js -->
   <!-- Header: injected by js/partials.js -->
   <kl-header></kl-header>
   <main id="main"> ... page content ... </main>
@@ -556,15 +555,15 @@ Floating panel, hidden by default, opened with `?demo=1` (persisted) or **Ctrl+S
 
 ## 14. GTM installation
 
-- Every page's `<head>` loads `js/config.js`, then `js/boot.js`, then the standard GTM snippet written out in full (section 4 skeleton). The snippet is identical on every page and is the one piece of shared markup that stays inline, so students can read the real snippet in view-source (chapters B2.4 to B2.6). The only difference from Google's version is the container ID argument:
+- Every page's `<head>` loads `js/config.js`, `js/boot.js`, then `js/partials.js`. **Both GTM pieces live in one place, a clearly marked block at the top of `js/partials.js`**, so editing them (or adding another pixel below them) applies to every page. The head snippet is Google's standard code run from that block, wrapped in `if (window.KL_GTM_ID)` so nothing loads when no container is set; the only differences are the container ID argument and an optional `window.KL_GTM_ENV` suffix on the URL. Because it is written by JavaScript, View Page Source does not show it (DevTools Elements does); teach chapters B2.4 to B2.6 from DevTools or from `partials.js`.
 
 ```html
-<script>(function(w,d,s,l,i){/* standard GTM snippet body */})
-(window,document,'script','dataLayer',window.KL_GTM_ID);</script>
+(function(w,d,s,l,i){/* standard GTM snippet body */})
+(window,document,'script','dataLayer',window.KL_GTM_ID);
 ```
 
-- `boot.js` sets `window.KL_GTM_ID` in this order: `?gtm=` URL parameter (also saved to `kl_gtm_id`), then `kl_gtm_id`, then the `gtmId` default in `config.js` (`GTM-XXXXXXX`). If the ID is still the placeholder, the snippet is skipped and the demo panel shows "No GTM container set".
-- `<body>` starts with the GTM `noscript` iframe using the placeholder ID, with a comment explaining it only applies to non-JS browsers and is not tied to the runtime ID.
+- `boot.js` sets `window.KL_GTM_ID` in this order: `?gtm=` URL parameter (also saved to `kl_gtm_id`), then `kl_gtm_id`, then the `gtmId` default in `config.js` (`GTM-XXXXXXX`). If the ID is still the placeholder, the snippet and the `noscript` iframe are skipped and the demo panel shows "No GTM container set".
+- The GTM `noscript` iframe is inserted by `<kl-header>` as the first thing in `<body>`, using the same runtime ID. Being JS-written, it only appears when JavaScript is on (a known limit: it cannot serve its real no-JS purpose).
 - Optional environment parameters (`gtm_auth`, `gtm_preview`) for chapter I6.3 live in `config.js` and are appended to the snippet URL when set.
 - **No gtag.js, Meta Pixel or other vendor tags** are hard-coded. Everything goes in through GTM during the course.
 - `/gateway` and `/booking-widget`: the gateway loads GTM from the `gtm` query parameter (section 10); the booking widget loads none by default (a comment shows where).
@@ -573,7 +572,7 @@ Floating panel, hidden by default, opened with `?demo=1` (persisted) or **Ctrl+S
 
 | Feature | Chapters |
 | --- | --- |
-| Real GTM snippet in view-source, runtime container ID | B2.4, B2.5, B2.6 |
+| GTM snippet (in `partials.js` and DevTools, not view-source), runtime container ID | B2.4, B2.5, B2.6 |
 | Injected header and footer (page source vs the live DOM) | W1.1, I6.1 |
 | Hero CTAs, nav, Quick add, fragile gift-wrap button | B4.2, B4.3, W2.3 |
 | Native newsletter form | B4.4 |
@@ -598,7 +597,7 @@ Floating panel, hidden by default, opened with `?demo=1` (persisted) or **Ctrl+S
 
 ## 16. Build order for Claude Code
 
-1. Scaffold folders, `site.css`, `tokens.css`, `base.css`, `config.js`, `boot.js` (GTM ID resolution, cookies, `window.KL`, consent defaults, data layer init), `partials.js` (header, footer, cart drawer) and one page skeleton. Confirm a blank page loads with the header, footer and GTM snippet.
+1. Scaffold folders, `site.css`, `tokens.css`, `base.css`, `config.js`, `boot.js` (GTM ID resolution, cookies, `window.KL`, consent defaults, data layer init), `partials.js` (header, footer, cart drawer) and one page skeleton. Confirm a blank page loads with the header, footer and GTM snippet (the snippet comes from `partials.js`).
 2. `util.js`, `db.js`, seed files, reset.
 3. `products.js`, `product.html` with `product.js`, Home and Shop.
 4. Cart (`KL.store`), cart page and drawer.

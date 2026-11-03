@@ -14,14 +14,11 @@
   <link rel="stylesheet" href="css/pages/shop.css">
   <script src="js/config.js"></script>
   <script src="js/boot.js"></script>
-  <!-- Google Tag Manager: the standard snippet. The container ID is window.KL_GTM_ID (set by js/boot.js from ?gtm=, then localStorage, then js/config.js). It is skipped when no container is set. -->
-  <script>if (window.KL_GTM_ID) {(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl+(window.KL_GTM_ENV||'');f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer',window.KL_GTM_ID);}</script>
-  <!-- End Google Tag Manager -->
+  <!-- GTM head snippet: lives in js/partials.js (one place for every page). -->
   <script src="js/partials.js"></script>
 </head>
 <body>
-  <!-- GTM noscript fallback: only applies to browsers with JavaScript off. It uses a placeholder ID and is not tied to the runtime container ID. -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- GTM body snippet (noscript iframe): inserted here by js/partials.js. -->
   <a class="skip-link" href="#main">Skip to content</a>
   <!-- Header: injected by js/partials.js -->
   <kl-header></kl-header>

@@ -96,9 +96,9 @@ By default `gateway/` and `booking-widget/` are loaded from the same site so eve
 
 ### Page skeleton
 
-Every page has the same `<head>` order (`config.js`, `boot.js`, GTM snippet, `partials.js`) and the same deferred "common scripts" block in the same order. If you add a shared script, add it to **every** page. Only the title, description, `data-page`, page CSS and page script change.
+Every page has the same `<head>` order (`config.js`, `boot.js`, `partials.js`) and the same deferred "common scripts" block in the same order. If you add a shared script, add it to **every** page. Only the title, description, `data-page`, page CSS and page script change.
 
-The GTM snippet is the standard one, with two small differences: the container ID is `window.KL_GTM_ID`, and the whole snippet is wrapped in `if (window.KL_GTM_ID)` so it is skipped when no container is set. It also appends `window.KL_GTM_ENV` (`gtm_auth` / `gtm_preview`) when set in `config.js`.
+The GTM head snippet and the body `<noscript>` iframe both live in **`js/partials.js`** (see the GTM block at the top of that file), so you edit them once and every page follows. The container ID is `window.KL_GTM_ID`, set by `boot.js`; with no ID set, nothing loads. `gtm_auth` / `gtm_preview` from `config.js` are appended when set. Because the snippet is written by JavaScript, View Page Source does not show it; DevTools Elements does. (The `<noscript>` iframe is also JS-written, so it only appears when JavaScript is on.)
 
 ### Data model
 
